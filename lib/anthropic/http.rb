@@ -73,7 +73,7 @@ module Anthropic
       preprocess_stack = ""
 
       proc do |chunk, _bytes, env|
-        handle_faraday_error(chunk, env)
+        handle_faraday_error(chunk, env) if env
 
         parser.feed(chunk) do |type, data|
           parsed_data = JSON.parse(data)

@@ -3,6 +3,7 @@ module Anthropic
     include Anthropic::HTTP
 
     CONFIG_KEYS = %i[
+      gcp
       access_token
       anthropic_version
       api_version
@@ -15,10 +16,12 @@ module Anthropic
       CONFIG_KEYS.each do |key|
         # Set instance variables like api_type & access_token. Fall back to global config
         # if not present.
-        instance_variable_set(
-          "@#{key}",
-          config[key].nil? ? Anthropic.configuration.send(key) : config[key]
-        )
+        if config[key].nil?
+          instance_variable_set("@#{key}", Anthropic.configuration.send(key))
+        else
+          instance_variable_set("@#{key}", config[key])
+          Anthropic.configuration.send("#{key}=", config[key])
+        end
       end
       @faraday_middleware = faraday_middleware
     end
@@ -64,7 +67,12 @@ module Anthropic
     #   "usage" => {"input_tokens" => 15, "output_tokens" => 5}
     # }
     def messages(parameters: {})
-      json_post(path: "/messages", parameters: parameters)
+      if @gcp
+        model = parameters.delete(:model)
+        json_post(path: "/#{model}:streamRawPredict", parameters: parameters)
+      else
+        json_post(path: "/messages", parameters: parameters)
+      end
     end
 
     private

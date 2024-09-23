@@ -28,7 +28,7 @@ module Anthropic
   class Configuration
     attr_writer :access_token
     attr_accessor :anthropic_version, :api_version, :extra_headers,
-                  :request_timeout, :uri_base
+                  :request_timeout, :uri_base, :gcp
 
     DEFAULT_API_VERSION = "v1".freeze
     DEFAULT_ANTHROPIC_VERSION = "2023-06-01".freeze
@@ -41,6 +41,7 @@ module Anthropic
       @anthropic_version = DEFAULT_ANTHROPIC_VERSION
       @uri_base = DEFAULT_URI_BASE
       @request_timeout = DEFAULT_REQUEST_TIMEOUT
+      @gcp = false
       @extra_headers = {}
     end
 
