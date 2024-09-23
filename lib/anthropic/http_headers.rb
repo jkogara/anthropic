@@ -7,13 +7,18 @@ module Anthropic
     private
 
     def headers
-      # TODO: Implement Amazon Bedrock headers
-      # if azure?
-      #   azure_headers
-      # else
-      #   openai_headers
-      # end.merge(extra_headers)
-      anthropic_headers.merge(extra_headers)
+      if @gcp
+        gcp_headers
+      else
+        anthropic_headers.merge(extra_headers)
+      end
+    end
+
+    def gcp_headers
+      {
+        "Content-Type" => "application/json; charset=utf-8",
+        "Authorization" => "Bearer #{@access_token}"
+      }
     end
 
     def anthropic_headers
